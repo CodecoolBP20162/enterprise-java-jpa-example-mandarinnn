@@ -15,29 +15,41 @@ public class Student {
 
     private String name;
 
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
+    @Transient
     private long age;
 
+    @ElementCollection
+    @CollectionTable(name="phone", joinColumns=@JoinColumn(name="id"))
+    private List<String> phoneNumbers;
+
     @OneToOne
+    @JoinColumn(name = "address_id")
     private Address address;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "class_id")
+    private Klass klass;
 
     public Student() {
     }
 
-    public Student(String name, String email, Date dateOfBirth) {
+    public Student(String name, String email, Date dateOfBirth, List<String> phoneNumbers) {
         this.name = name;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
+        this.phoneNumbers = phoneNumbers;
         this.age = (Calendar.getInstance().getTimeInMillis() - dateOfBirth.getTime())
                 / (60L * 60L * 1000L * 24L * 365L);
     }
 
-    public Student(String name, String email, Date dateOfBirth, Address address) {
-        this(name, email, dateOfBirth);
+    public Student(String name, String email, Date dateOfBirth, List<String> phoneNumbers, Address address) {
+        this(name, email, dateOfBirth, phoneNumbers);
         this.address = address;
     }
 
@@ -83,6 +95,26 @@ public class Student {
 
     public void setAddress(Address address) {
         this.address = address;
+    }
+
+
+    public List<String> getPhoneNumbers() {
+        return phoneNumbers;
+    }
+
+    public void setPhoneNumbers(List<String> phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
+    }
+
+    public Klass getKlass() {
+        return klass;
+    }
+
+    public void setKlass(Klass klass) {
+        this.klass = klass;
+       /* if (!klass.getStudents().contains(this)) {
+            klass.getStudents().add(this);
+        }*/
     }
 
     @Override
